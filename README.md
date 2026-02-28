@@ -6,7 +6,7 @@
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Tests](https://img.shields.io/badge/tests-291%20passed-brightgreen.svg)]()
 [![Agents](https://img.shields.io/badge/AI%20Agents-27-purple.svg)]()
-[![Skills](https://img.shields.io/badge/Skills-15-orange.svg)]()
+[![Skills](https://img.shields.io/badge/Skills-18-orange.svg)]()
 [![Commands](https://img.shields.io/badge/Commands-45-yellow.svg)]()
 [![Workflows](https://img.shields.io/badge/Workflows-33-cyan.svg)]()
 
@@ -23,6 +23,7 @@
 ## 📋 Table of Contents
 
 - [What is Gemini-Kit?](#-what-is-gemini-kit)
+- [How the Project Is Driven](#️-how-the-project-is-driven)
 - [Quick Start](#-quick-start)
 - [Agents](#-agents)
 - [Skills](#️-skills)
@@ -40,7 +41,7 @@
 | Feature | Count | Description |
 |---------|-------|-------------|
 | 🤖 **AI Agents** | 27 | Specialized roles (Security, Frontend, Backend, DevOps...) |
-| 🛠️ **Skills** | 15 | Knowledge modules (React, Next.js, Docker, Security...) |
+| 🛠️ **Skills** | 18 | Knowledge modules (React, Next.js, Laravel, Nuxt, Docker, Security...) |
 | ⌨️ **Commands** | 45 | Slash commands for every workflow |
 | 🔄 **Workflows** | 33 | Structured development workflows |
 | 🔒 **Security** | 30+ | Secret detection patterns |
@@ -55,6 +56,75 @@
 - **💾 Auto-checkpoint**: Automatic Git backup before changes
 - **🔒 Security Hooks**: Real-time blocking of secrets (30+ patterns)
 - **📢 Notifications**: Discord & Telegram integration
+
+---
+
+## ⚙️ How the Project Is Driven
+
+Gemini-Kit wires together five layers that turn a user prompt into coordinated AI work:
+
+```
+User prompt
+    │
+    ▼
+┌─────────────────────────────────────────────────────┐
+│  Hooks  (before-agent.js)                           │
+│  • Inject relevant learnings from LEARNINGS.md      │
+│  • Inject development rules                         │
+│  • Match keywords → inject workflow/doc context     │
+└────────────────────────┬────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────┐
+│  Commands  (commands/*.toml)                        │
+│  /plan /cook /review /skill /scout …                │
+│  Each command expands into an agent prompt          │
+└────────────────────────┬────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────┐
+│  Orchestrator  (src/tools/orchestrator.ts)          │
+│  • autoSelectWorkflow() scores keywords → workflow  │
+│  • Runs agents sequentially or in parallel          │
+│  • Retries failed steps, escalates if needed        │
+└────────────────────────┬────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────┐
+│  Agents  (agents/*.md)                              │
+│  Specialized personas (Planner, Coder, Reviewer…)   │
+│  Each agent reads the Skills it needs               │
+└────────────────────────┬────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────┐
+│  Skills  (skills/**/SKILL.md)                       │
+│  Domain knowledge loaded on demand                  │
+│  Auto-injected by keyword or agent context          │
+└─────────────────────────────────────────────────────┘
+```
+
+### Workflow Auto-Selection
+
+When you run `/cook <task>`, the orchestrator scores your task description against keyword patterns to pick the best workflow automatically:
+
+| Keywords in task | Selected workflow |
+|------------------|-------------------|
+| `fix`, `debug`, `broken` | **quickfix** – Debug → Code → Test |
+| `feature`, `implement`, `build` | **feature** – Design → Plan → Code → Test → Docs |
+| `refactor`, `restructure` | **refactor** – Scout → Plan → Code → Test → Review |
+| `review`, `audit` | **review** – Scout → Review → Security |
+| `test`, `tdd`, `spec` | **tdd** – Tests first, then implement |
+| `document`, `readme` | **docs** – Scout → Analyze → Write → Review |
+| *(anything else)* | **cook** – Full cycle (default) |
+
+### Skill Selection
+
+Skills are picked in one of three ways — you rarely need to choose manually:
+
+1. **By agent**: The `frontend-specialist` automatically brings React/Next.js/Tailwind skills; `backend-specialist` brings API/Docker/Security skills.
+2. **By keyword hook**: `before-agent.js` scans every prompt and injects matching skill context (`laravel`, `nuxt`, `filament`, etc.).
+3. **Explicitly**: Reference the framework in your prompt (`"using Filament v4…"`) or run `/skill create <technology>` to add a new skill.
 
 ---
 
@@ -170,38 +240,49 @@ git pull && npm install && npm run build
 
 ## 🛠️ Skills
 
-### 15 Knowledge Modules
+### 18 Knowledge Modules
 
-Skills are loaded automatically based on context and agent configuration.
+Skills are **context-aware knowledge modules** loaded by agents based on the task at hand.
 
-#### Frontend (4)
+#### How Skill Selection Works
+
+| Trigger | Mechanism | Example |
+|---------|-----------|---------|
+| **Agent context** | Each specialized agent embeds the skills it needs | `frontend-specialist` → React, Next.js, Tailwind |
+| **Keyword matching** | `before-agent` hook scans the prompt for domain keywords | "Laravel route" → laravel skill injected |
+| **Explicit request** | User references skill or framework directly | "Use the nuxt skill to explain SSR" |
+| **`/skill` command** | Create, add, optimize, or fix-logs for any skill | `/skill create Stripe integration` |
+
+> **TL;DR**: You usually don't need to choose a skill manually. Ask an agent or use a command — the right skill is injected automatically. For new domains, run `/skill create <technology>`.
+
+---
+
+#### Frontend (6)
 
 | Skill | Content |
 |-------|---------|
 | **react-patterns** | Hooks, state management, component composition |
 | **nextjs** | App Router, Server Components, data fetching |
+| **nuxt** | Nuxt 4 file-based routing, composables, server API routes, SSR |
 | **tailwind** | Tailwind CSS v4, responsive design |
 | **performance** | Core Web Vitals, caching, optimization |
+| **mobile** | React Native, Flutter, mobile performance |
 
-#### Backend (3)
+#### Backend & Fullstack (5)
 
 | Skill | Content |
 |-------|---------|
 | **api-design** | RESTful patterns, validation, rate limiting |
 | **docker** | Multi-stage builds, Compose, container security |
 | **security** | OWASP Top 10, JWT, XSS/CSRF prevention |
+| **laravel** | Laravel 12 Eloquent ORM, queues, events, API resources |
+| **filament** | Filament v4 admin panel, form/table builder, widgets |
 
-#### Mobile & Testing (2)
+#### Testing & Workflow (7)
 
 | Skill | Content |
 |-------|---------|
-| **mobile** | React Native, Flutter, mobile performance |
 | **testing** | Vitest, MSW, snapshot testing |
-
-#### Workflow (6)
-
-| Skill | Content |
-|-------|---------|
 | **code-review** | Review checklist, patterns |
 | **debug** | 4-phase debugging methodology |
 | **session-resume** | Context recovery |
@@ -429,7 +510,7 @@ Configure **Gemini CLI** with your Google account. No separate API key needed.
 | Tests | 291 passing |
 | Lint | 0 errors |
 | Agents | 27 |
-| Skills | 15 categories |
+| Skills | 18 categories |
 | Commands | 45 |
 | Workflows | 33 |
 | Scripts | 50+ |
