@@ -14,6 +14,9 @@ The "brain" of the AI Agent. This directory contains the definitions, memories, 
 | `testing/` | Custom testing infrastructure and patterns. |
 | `debug/` | Root-cause analysis and debugging protocols. |
 | `react-hooks/` | Best practices and patterns for React development. |
+| `laravel/` | Laravel 12 patterns, Eloquent ORM, queues, and API development. |
+| `filament/` | Filament v4 admin panel, form builder, tables, and widgets. |
+| `nuxt/` | Nuxt 4 architecture, composables, server routes, and SSR patterns. |
 | `examples/` | Project-specific or optional skill examples (e.g. Supabase). |
 
 ## Component Details
@@ -25,6 +28,9 @@ Contains the `SKILL.md` instruction set and template files used by the `/compoun
 Contains the logic for managing the `todos/` directory, including status transitions and priority handling.
 
 ## Changelog
+
+### 2026-02-28
+- Added `laravel/`, `filament/`, and `nuxt/` skill definitions.
 
 ### 2025-12-23
 - Initialized README documentation.
